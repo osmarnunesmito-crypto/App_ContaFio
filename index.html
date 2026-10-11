@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ContaFio — Comanda Digital por Profissional</title>
+<style>
+  :root{
+    --gold:#f5b81f;
+    --gold-soft:rgba(245,184,31,.15);
+    --gold-border:rgba(245,184,31,.35);
+    --navy:#0f172a;
+    --navy-2:#172554;
+    --blue:#1e3a8a;
+    --card:rgba(15,23,42,.75);
+    --line:rgba(255,255,255,.1);
+    --text:#f8fafc;
+    --muted:#94a3b8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;width:100%}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(1200px 600px at 20% -10%, #1e3a8a 0%, transparent 60%),
+      radial-gradient(1000px 520px at 100% 0%, #312e81 0%, transparent 55%),
+      linear-gradient(180deg, #020617 0%, #0f172a 100%);
+    min-height:100vh;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:0 16px;width:100%}
+
+  header{
+    background:linear-gradient(90deg,#172554,#1e3a8a,#172554);
+    border-bottom:2px solid var(--gold-border);
+  }
+  .header-inner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:18px 0}
+  .logo{
+    background:linear-gradient(135deg,#f5b81f,#d99a0b);
+    color:#0f172a;border-radius:12px;
+    width:48px;height:48px;display:flex;align-items:center;justify-content:center;
+    font-size:24px;box-shadow:0 6px 18px rgba(245,184,31,.35);flex-shrink:0;
+  }
+  .header-title{flex:1;min-width:200px}
+  .header-title h1{margin:0;font-size:26px;font-weight:900;color:var(--gold);letter-spacing:-.5px}
+  .header-title p{margin:2px 0 0;font-size:13px;color:#93c5fd}
+  .pill{
+    font-size:11px;color:#bfdbfe;background:rgba(30,58,138,.5);
+    border:1px solid rgba(96,165,250,.25);border-radius:999px;padding:6px 12px;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(15,23,42,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--gold-border);
+  }
+  .nav-inner{display:flex;gap:8px;overflow-x:auto;padding:10px 0}
+  .nav-btn{
+    display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
+    padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;
+    border:1px solid var(--line);background:rgba(255,255,255,.05);color:#cbd5e1;
+    cursor:pointer;transition:all .2s;font-family:inherit;
+  }
+  .nav-btn:hover{background:rgba(255,255,255,.12)}
+  .nav-btn.active{background:var(--gold);color:#0f172a;border-color:var(--gold);font-weight:700;box-shadow:0 4px 14px rgba(245,184,31,.3)}
+
+  .card{
+    background:var(--card);border:1px solid var(--gold-border);border-radius:18px;
+    padding:20px;margin-bottom:18px;backdrop-filter:blur(4px);
+  }
+  .card-top{border-top:4px solid var(--gold)}
+  .sec-title{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:800;color:var(--gold);margin:0 0 16px}
+
+  .label{display:block;font-size:13px;font-weight:600;color:#cbd5e1;margin-bottom:6px}
+  .input{
+    width:100%;background:rgba(30,58,138,.35);border:1px solid rgba(96,165,250,.25);
+    border-radius:12px;padding:11px 14px;color:#f8fafc;font-size:15px;outline:none;
+    transition:all .2s;font-family:inherit;
+  }
+  .input::placeholder{color:#64748b}
+  .input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(245,184,31,.18)}
+  select.input{color-scheme:dark;cursor:pointer}
+  select.input option{background:#0f172a;color:#f8fafc}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:11px 18px;border-radius:12px;font-size:14px;font-weight:700;
+    border:none;cursor:pointer;transition:all .15s;font-family:inherit;line-height:1.2;
+  }
+  .btn:active{transform:scale(.96)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn-gold{background:linear-gradient(135deg,#f5b81f,#d99a0b);color:#0f172a;box-shadow:0 6px 16px rgba(245,184,31,.3)}
+  .btn-gold:hover{filter:brightness(1.08)}
+  .btn-blue{background:#2563eb;color:#fff;box-shadow:0 6px 16px rgba(37,99,235,.3)}
+  .btn-blue:hover{background:#3b82f6}
+  .btn-ghost{background:rgba(255,255,255,.06);color:#e2e8f0;border:1px solid var(--line)}
+  .btn-ghost:hover{background:rgba(255,255,255,.12)}
+  .btn-danger{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+  .btn-danger:hover{background:rgba(239,68,68,.28)}
+
+  .icon-btn{
+    background:transparent;border:none;color:#94a3b8;border-radius:10px;
+    padding:8px;cursor:pointer;font-size:16px;transition:all .15s;line-height:1;
+  }
+  .icon-btn:hover{background:rgba(255,255,255,.12);color:#fff}
+  .icon-btn-danger{color:#f87171}
+  .icon-btn-danger:hover{background:rgba(239,68,68,.25);color:#fff}
+
+  .grid{display:grid;gap:16px}
+  .grid-2{grid-template-columns:1fr}
+  .grid-3{grid-template-columns:1fr}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .between{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .mt{margin-top:14px}
+  .space-y > *{margin-bottom:12px}
+  .space-y > *:last-child{margin-bottom:0}
+
+  @media(min-width:640px){
+    .grid-2{grid-template-columns:1fr 1fr}
+    .grid-3{grid-template-columns:1fr 1fr 1fr}
+  }
+
+  .item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .item:last-child{border-bottom:none}
+  .item-icon{
+    background:var(--gold-soft);color:var(--gold);border-radius:12px;
+    width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;
+  }
+  .item-main{flex:1;min-width:150px}
+  .item-title{font-weight:700;color:#fff;margin:0}
+  .item-sub{font-size:12px;color:var(--muted);margin:2px 0 0}
+  .money{font-weight:800;color:var(--gold);white-space:nowrap}
+  .money-big{font-size:32px;font-weight:900;color:var(--gold)}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700}
+  .badge-open{background:rgba(37,99,235,.18);color:#93c5fd;border:1px solid rgba(59,130,246,.4)}
+  .badge-paid{background:rgba(245,184,31,.18);color:#fcd34d;border:1px solid rgba(245,184,31,.45)}
+
+  .stat{text-align:center;padding:16px}
+  .stat-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#93c5fd;font-weight:700}
+  .stat-value{font-size:24px;font-weight:900;color:#fff;margin-top:4px}
+  .stat-value.gold{color:var(--gold)}
+
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:520px}
+  th{text-align:left;color:#93c5fd;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:12px;border-bottom:1px solid var(--line)}
+  td{padding:12px;border-bottom:1px solid rgba(255,255,255,.05)}
+  tr:hover td{background:rgba(255,255,255,.04)}
+  .t-right{text-align:right}
+  .t-center{text-align:center}
+  tfoot td{border-top:2px solid var(--gold-border);font-weight:800}
+
+  .pay-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  @media(min-width:640px){.pay-grid{grid-template-columns:repeat(5,1fr)}}
+  .pay-btn{
+    display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;
+    border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.05);
+    color:#cbd5e1;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;
+  }
+  .pay-btn:hover{background:rgba(255,255,255,.12)}
+  .pay-btn.active{background:var(--gold);color:#0f172a;border-color:var(--gold);font-weight:700;box-shadow:0 4px 12px rgba(245,184,31,.3)}
+  .pay-btn span{font-size:20px}
+
+  .empty{text-align:center;color:var(--muted);padding:32px 12px}
+  .empty-icon{font-size:42px;margin-bottom:10px;opacity:.5}
+
+  .danger-zone{border:1px solid rgba(239,68,68,.3);background:rgba(239,68,68,.06);border-radius:14px;padding:16px}
+
+  footer{border-top:1px solid var(--line);margin-top:20px}
+  footer .wrap{padding:18px 16px;text-align:center;font-size:12px;color:var(--muted)}
+  footer b{color:var(--gold)}
+
+  .value-box{
+    background:rgba(30,58,138,.45);border:1px solid rgba(96,165,250,.25);
+    border-radius:12px;padding:12px 16px;
+  }
+  .value-box .lbl{font-size:11px;color:#93c5fd;font-weight:700}
+  .value-box .val{font-size:20px;font-weight:900;color:var(--gold)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-inner">
+    <div class="logo">✂️</div>
+    <div class="header-title">
+      <h1>ContaFio</h1>
+      <p>Comanda digital por profissional — conta sem discussão no balcão</p>
+    </div>
+    <div class="pill">💾 Dados salvos no navegador</div>
+  </div>
+</header>
+
+<nav>
+  <div class="wrap nav-inner" id="nav"></div>
+</nav>
+
+<main class="wrap" id="main" style="padding-top:22px;padding-bottom:10px"></main>
+
+<footer>
+  <div class="wrap">
+    <b>ContaFio</b> — catálogo com preço pronto, lançamento por profissional e relatório de comissão.<br>
+    Feito para salões e clínicas de estética. Funciona 100% offline.
+  </div>
+</footer>
+
+<script>
+"use strict";
+
+/* ===== Utilitários ===== */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];}); }
+function money(v){ return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+function uid(){ return 'id-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8); }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+function hojeISO(){
+  var d=new Date(); var l=new Date(d.getTime()-d.getTimezoneOffset()*60000);
+  return l.toISOString().slice(0,10);
+}
+function ultimosDias(n){
+  var arr=[];
+  for(var i=0;i<n;i++){
+    var d=new Date(); d.setDate(d.getDate()-i);
+    var l=new Date(d.getTime()-d.getTimezoneOffset()*60000);
+    arr.push(l.toISOString().slice(0,10));
+  }
+  return arr;
+}
+function fmtData(iso){
+  if(!iso) return '—';
+  var p=iso.split('-'); return p[2]+'/'+p[1]+'/'+p[0];
+}
+var HOJE=hojeISO();
+var OPCOES_DATAS=ultimosDias(30);
+
+/* ===== Armazenamento ===== */
+var KEY='contafio_offline_v1';
+var SEED={
+  servicos:[
+    {id:'s1',nome:'Corte Feminino',preco:80},
+    {id:'s2',nome:'Corte Masculino',preco:50},
+    {id:'s3',nome:'Escova Modelada',preco:60},
+    {id:'s4',nome:'Manicure',preco:40},
+    {id:'s5',nome:'Pedicure',preco:45},
+    {id:'s6',nome:'Coloração',preco:150},
+    {id:'s7',nome:'Mechas / Luzes',preco:250},
+    {id:'s8',nome:'Hidratação',preco:90},
+    {id:'s9',nome:'Progressiva',preco:300},
+    {id:'s10',nome:'Design de Sobrancelha',preco:35}
+  ],
+  profissionais:[
+    {id:'p1',nome:'Ana Souza',comissao:50},
+    {id:'p2',nome:'Bruno Lima',comissao:40},
+    {id:'p3',nome:'Carla Menezes',comissao:45}
+  ],
+  comandas:[]
+};
+
+function carregar(){
+  try{
+    var raw=localStorage.getItem(KEY);
+    if(raw){
+      var p=JSON.parse(raw);
+      if(p&&p.servicos&&p.profissionais&&p.comandas) return p;
+    }
+  }catch(e){}
+  return clone(SEED);
+}
+function salvar(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+}
+
+var state=carregar();
+
+/* ===== Estado da interface ===== */
+var view='comandas';
+var comandaId=null;
+var clienteNovo='';
+var formProf='', formServ='', formData=hojeISO(), editId=null;
+var formPag='pix', dividir=1;
+var filtroData='todas';
+var servNome='', servPreco='', servEditId=null;
+var profNome='', profComissao='', profEditId=null;
+var confirmar=null;
+
+var FORMAS=[
+  {id:'pix',label:'Pix',icon:'⚡'},
+  {id:'dinheiro',label:'Dinheiro',icon:'💵'},
+  {id:'credito',label:'Crédito',icon:'💳'},
+  {id:'debito',label:'Débito',icon:'🏧'},
+  {id:'transferencia',label:'Transf.',icon:'🏦'}
+];
+
+function getComanda(){ return state.comandas.find(function(c){return c.id===comandaId;})||null; }
+function totalComanda(c){ return (c?c.itens:[]).reduce(function(s,i){return s+Number(i.preco||0);},0); }
+function formaAtual(id){ return FORMAS.find(function(f){return f.id===id;})||FORMAS[0]; }
+
+/* ===== Navegação ===== */
+function setView(v){
+  view=v;
+  if(v!=='comanda'){ editId=null; formProf=''; formServ=''; formData=hojeISO(); }
+  render();
+}
+
+var TABS=[
+  {id:'comandas',label:'📋 Comandas'},
+  {id:'servicos',label:'✂️ Serviços'},
+  {id:'profissionais',label:'👥 Profissionais'},
+  {id:'relatorio',label:'📊 Relatório'},
+  {id:'ajustes',label:'⚙️ Ajustes'}
+];
+
+function renderNav(){
+  var html='';
+  TABS.forEach(function(t){
+    var ativo=(t.id==='comandas'&&view==='comandas')||(t.id!=='comandas'&&view===t.id);
+    html+='<button class="nav-btn'+(ativo?' active':'')+'" onclick="setView(\''+t.id+'\')">'+t.label+'</button>';
+  });
+  document.getElementById('nav').innerHTML=html;
+}
+
+/* ===== CRUD Comandas ===== */
+function criarComanda(){
+  var nome=clienteNovo.trim();
+  if(!nome) return;
+  var nova={id:uid(),cliente:nome,itens:[],status:'aberta',pagamento:null};
+  state.comandas.unshift(nova);
+  clienteNovo='';
+  comandaId=nova.id; view='comanda';
+  salvar(); render();
+}
+function abrirComanda(id){
+  comandaId=id; view='comanda';
+  editId=null; formProf=''; formServ=''; formData=hojeISO();
+  render();
+}
+function excluirComanda(id){
+  if(confirmar==='cmd-'+id){
+    state.comandas=state.comandas.filter(function(c){return c.id!==id;});
+    if(comandaId===id){ comandaId=null; view='comandas'; }
+    confirmar=null; salvar(); render();
+  }else{
+    confirmar='cmd-'+id; render();
+  }
+}
+
+/* ===== Lançamentos ===== */
+function adicionarLancamento(){
+  var c=getComanda(); if(!c||!formProf||!formServ) return;
+  var serv=state.servicos.find(function(s){return s.id===formServ;});
+  var prof=state.profissionais.find(function(p){return p.id===formProf;});
+  if(!serv||!prof) return;
+  c.itens.push({id:uid(),profissionalId:prof.id,profissionalNome:prof.nome,servicoId:serv.id,servicoNome:serv.nome,preco:Number(serv.preco),data:formData});
+  formProf=''; formServ=''; formData=hojeISO();
+  salvar(); render();
+}
+function iniciarEdicaoItem(id){
+  var c=getComanda(); if(!c) return;
+  var it=c.itens.find(function(i){return i.id===id;}); if(!it) return;
+  editId=id; formProf=it.profissionalId; formServ=it.servicoId; formData=it.data;
+  render();
+}
+function salvarEdicaoLancamento(){
+  var c=getComanda(); if(!c||!editId||!formProf||!formServ) return;
+  var serv=state.servicos.find(function(s){return s.id===formServ;});
+  var prof=state.profissionais.find(function(p){return p.id===formProf;});
+  if(!serv||!prof) return;
+  c.itens=c.itens.map(function(i){
+    if(i.id===editId){ return Object.assign({},i,{profissionalId:prof.id,profissionalNome:prof.nome,servicoId:serv.id,servicoNome:serv.nome,preco:Number(serv.preco),data:formData}); }
+    return i;
+  });
+  editId=null; formProf=''; formServ=''; formData=hojeISO();
+  salvar(); render();
+}
+function cancelarEdicaoItem(){
+  editId=null; formProf=''; formServ=''; formData=hojeISO(); render();
+}
+function excluirItem(id){
+  var c=getComanda(); if(!c) return;
+  c.itens=c.itens.filter(function(i){return i.id!==id;});
+  if(editId===id){ editId=null; formProf=''; formServ=''; formData=hojeISO(); }
+  salvar(); render();
+}
+function fecharComanda(){
+  var c=getComanda(); if(!c) return;
+  c.status='paga'; c.pagamento={forma:formPag,dividirEm:Number(dividir)};
+  salvar(); render();
+}
+function reabrirComanda(){
+  var c=getComanda(); if(!c) return;
+  c.status='aberta'; c.pagamento=null;
+  salvar(); render();
+}
+
+/* ===== CRUD Serviços ===== */
+function iniciarEdicaoServ(id){
+  var s=state.servicos.find(function(x){return x.id===id;}); if(!s) return;
+  servEditId=id; servNome=s.nome; servPreco=String(s.preco);
+  render();
+}
+function salvarServico(){
+  var nome=servNome.trim(); var preco=Number(servPreco);
+  if(!nome||!(preco>0)) return;
+  if(servEditId){
+    state.servicos=state.servicos.map(function(s){ return s.id===servEditId?{id:s.id,nome:nome,preco:preco}:s; });
+  }else{
+    state.servicos.push({id:uid(),nome:nome,preco:preco});
+  }
+  servEditId=null; servNome=''; servPreco='';
+  salvar(); render();
+}
+function cancelarEdicaoServ(){ servEditId=null; servNome=''; servPreco=''; render(); }
+function excluirServico(id){
+  state.servicos=state.servicos.filter(function(s){return s.id!==id;});
+  salvar(); render();
+}
+
+/* ===== CRUD Profissionais ===== */
+function iniciarEdicaoProf(id){
+  var p=state.profissionais.find(function(x){return x.id===id;}); if(!p) return;
+  profEditId=id; profNome=p.nome; profComissao=String(p.comissao);
+  render();
+}
+function salvarProfissional(){
+  var nome=profNome.trim(); var comissao=Number(profComissao);
+  if(!nome||comissao<0||comissao>100) return;
+  if(profEditId){
+    state.profissionais=state.profissionais.map(function(p){ return p.id===profEditId?{id:p.id,nome:nome,comissao:comissao}:p; });
+  }else{
+    state.profissionais.push({id:uid(),nome:nome,comissao:comissao});
+  }
+  profEditId=null; profNome=''; profComissao='';
+  salvar(); render();
+}
+function cancelarEdicaoProf(){ profEditId=null; profNome=''; profComissao=''; render(); }
+function excluirProfissional(id){
+  state.profissionais=state.profissionais.filter(function(p){return p.id!==id;});
+  salvar(); render();
+}
+function atualizarComissao(id, val){
+  var v=Number(val);
+  if(isNaN(v)) v=0;
+  if(v<0) v=0;
+  if(v>100) v=100;
+  var p=state.profissionais.find(function(x){return x.id===id;});
+  if(!p) return;
+  p.comissao=v;
+  salvar();
+  render();
+}
+
+/* ===== Ajustes ===== */
+function zerarComandas(){
+  if(confirmar==='zerar'){ state.comandas=[]; comandaId=null; view='comandas'; confirmar=null; salvar(); render(); }
+  else{ confirmar='zerar'; render(); }
+}
+function restaurarCatalogo(){
+  state.servicos=clone(SEED.servicos); state.profissionais=clone(SEED.profissionais);
+  confirmar=null; salvar(); render();
+}
+function limparTudo(){
+  if(confirmar==='limpar'){
+    try{ localStorage.removeItem(KEY); }catch(e){}
+    state=clone(SEED); comandaId=null; view='comandas'; confirmar=null;
+    servNome=''; servPreco=''; profNome=''; profComissao='';
+    render();
+  }else{ confirmar='limpar'; render(); }
+}
+
+/* ===== Relatório ===== */
+function datasExistentes(){
+  var s={};
+  state.comandas.forEach(function(c){ c.itens.forEach(function(i){ s[i.data]=true; }); });
+  return Object.keys(s).sort().reverse();
+}
+function itensFiltrados(){
+  var list=[];
+  state.comandas.forEach(function(c){
+    c.itens.forEach(function(i){
+      if(filtroData==='todas'||i.data===filtroData){ list.push(Object.assign({},i,{cliente:c.cliente,status:c.status})); }
+    });
+  });
+  return list;
+}
+function resumoProfissionais(){
+  var map={};
+  itensFiltrados().forEach(function(i){
+    if(!map[i.profissionalId]) map[i.profissionalId]={id:i.profissionalId,nome:i.profissionalNome,total:0,qtd:0};
+    map[i.profissionalId].total+=Number(i.preco||0);
+    map[i.profissionalId].qtd+=1;
+  });
+  return Object.keys(map).map(function(k){
+    var p=map[k];
+    var prof=state.profissionais.find(function(x){return x.id===p.id;});
+    var com=prof?Number(prof.comissao||0):0;
+    return {id:p.id,nome:p.nome,total:p.total,qtd:p.qtd,comissao:com,valorComissao:p.total*com/100};
+  }).sort(function(a,b){return b.total-a.total;});
+}
+
+/* ===== Render principal ===== */
+function badge(c){
+  return c.status==='paga'
+    ? '<span class="badge badge-paid">✔ Paga</span>'
+    : '<span class="badge badge-open">✨ Aberta</span>';
+}
+
+function render(){
+  renderNav();
+  var el=document.getElementById('main');
+  if(view==='comanda'){ el.innerHTML=renderComanda(); return; }
+  if(view==='servicos'){ el.innerHTML=renderServicos(); return; }
+  if(view==='profissionais'){ el.innerHTML=renderProfissionais(); return; }
+  if(view==='relatorio'){ el.innerHTML=renderRelatorio(); return; }
+  if(view==='ajustes'){ el.innerHTML=renderAjustes(); return; }
+  el.innerHTML=renderComandas();
+}
+
+/* ----- Comanda ativa ----- */
+function renderComanda(){
+  var c=getComanda();
+  if(!c){ view='comandas'; return renderComandas(); }
+  var tot=totalComanda(c);
+  var pag=c.pagamento;
+  var forma=formaAtual(pag?pag.forma:formPag);
+  var dv=pag?pag.dividirEm:Number(dividir);
+
+  var itensHtml='';
+  if(c.itens.length===0){
+    itensHtml='<div class="empty"><div class="empty-icon">✂️</div>Nenhum serviço lançado ainda.<br>Use o formulário acima para começar.</div>';
+  }else{
+    itensHtml=c.itens.map(function(i){
+      return '<div class="item">'+
+        '<div class="item-icon">✂️</div>'+
+        '<div class="item-main"><p class="item-title">'+esc(i.servicoNome)+'</p>'+
+        '<p class="item-sub">👤 '+esc(i.profissionalNome)+' • 📅 '+fmtData(i.data)+'</p></div>'+
+        '<span class="money">'+money(i.preco)+'</span>'+
+        '<button class="icon-btn" title="Editar" onclick="iniciarEdicaoItem(\''+i.id+'\')">✏️</button>'+
+        '<button class="icon-btn icon-btn-danger" title="Excluir" onclick="excluirItem(\''+i.id+'\')">🗑️</button>'+
+      '</div>';
+    }).join('');
+  }
+
+  var profOpts='<option value="">Selecione…</option>'+state.profissionais.map(function(p){
+    return '<option value="'+p.id+'"'+(formProf===p.id?' selected':'')+'>'+esc(p.nome)+' ('+p.comissao+'%)</option>';
+  }).join('');
+
+  var servOpts='<option value="">Selecione…</option>'+state.servicos.map(function(s){
+    return '<option value="'+s.id+'"'+(formServ===s.id?' selected':'')+'>'+esc(s.nome)+' — '+money(s.preco)+'</option>';
+  }).join('');
+
+  var dataOpts=OPCOES_DATAS.map(function(d){
+    return '<option value="'+d+'"'+(formData===d?' selected':'')+'>'+fmtData(d)+(d===HOJE?' (Hoje)':'')+'</option>';
+  }).join('');
+
+  var pagBtns=FORMAS.map(function(f){
+    return '<button class="pay-btn'+(formPag===f.id?' active':'')+'" onclick="formPag=\''+f.id+'\';render()">'+
+      '<span>'+f.icon+'</span>'+f.label+'</button>';
+  }).join('');
+
+  var divOpts='';
+  for(var n=1;n<=8;n++){
+    divOpts+='<option value="'+n+'"'+(dividir===n?' selected':'')+'>'+(n===1?'Conta inteira (1x)':n+' pessoas')+'</option>';
+  }
+
+  var html='';
+
+  html+='<div class="between" style="margin-bottom:16px">'+
+    '<button class="btn btn-ghost" onclick="setView(\'comandas\')">← Voltar</button>'+
+    '<div class="row">'+badge(c)+
+      '<button class="btn '+(confirmar==='cmd-'+c.id?'btn-danger':'btn-ghost')+'" onclick="excluirComanda(\''+c.id+'\')">🗑️ '+(confirmar==='cmd-'+c.id?'Confirmar?':'Excluir')+'</button>'+
+    '</div></div>';
+
+  html+='<div class="card card-top"><div class="between">'+
+    '<div><div style="font-size:11px;letter-spacing:1px;color:#93c5fd;font-weight:700;text-transform:uppercase">Comanda do cliente</div>'+
+    '<h2 style="margin:4px 0 0;font-size:24px">'+esc(c.cliente)+'</h2>'+
+    '<p style="margin:4px 0 0;font-size:13px;color:var(--muted)">'+c.itens.length+' serviço(s) lançado(s)</p></div>'+
+    '<div style="text-align:right"><div style="font-size:11px;letter-spacing:1px;color:#93c5fd;font-weight:700;text-transform:uppercase">Total fechado</div>'+
+    '<div class="money-big">'+money(tot)+'</div></div>'+
+  '</div></div>';
+
+  html+='<div class="card"><h3 class="sec-title">➕ '+(editId?'Editar lançamento':'Lançar serviço na comanda')+'</h3>'+
+    '<div class="grid grid-3">'+
+    '<div><label class="label">👤 Profissional</label><select class="input" onchange="formProf=this.value">'+profOpts+'</select></div>'+
+    '<div><label class="label">✂️ Serviço</label><select class="input" onchange="formServ=this.value">'+servOpts+'</select></div>'+
+    '<div><label class="label">📅 Data</label><select class="input" onchange="formData=this.value">'+dataOpts+'</select></div>'+
+    '</div>'+
+    '<div class="row mt">'+
+    (editId
+      ? '<button class="btn btn-gold" onclick="salvarEdicaoLancamento()">✔ Salvar alteração</button>'+
+        '<button class="btn btn-ghost" onclick="cancelarEdicaoItem()">Cancelar</button>'
+      : '<button class="btn btn-gold" onclick="adicionarLancamento()">➕ Adicionar serviço</button>')+
+    '</div></div>';
+
+  html+='<div class="card"><h3 class="sec-title">🧾 Itens lançados</h3>'+itensHtml+'</div>';
+
+  html+='<div class="card card-top"><h3 class="sec-title">💳 '+(c.status==='paga'?'Recibo':'Fechamento e pagamento')+'</h3>';
+
+  html+='<div class="between" style="padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:16px">'+
+    '<span style="color:#cbd5e1">Subtotal dos serviços</span>'+
+    '<span style="font-size:22px;font-weight:900;color:#fff">'+money(tot)+'</span></div>';
+
+  if(c.status==='aberta'){
+    html+='<div class="space-y">'+
+      '<div><label class="label">Forma de pagamento</label><div class="pay-grid">'+pagBtns+'</div></div>'+
+      '<div class="grid grid-2">'+
+        '<div><label class="label">Dividir a conta em quantas partes?</label><select class="input" onchange="dividir=Number(this.value);render()">'+divOpts+'</select></div>'+
+        (dv>1?'<div class="value-box"><div class="lbl">Valor por pessoa</div><div class="val">'+money(tot/dv)+'</div></div>':'')+
+      '</div>'+
+      '<button class="btn btn-gold" style="width:100%" onclick="fecharComanda()" '+(tot<=0?'disabled':'')+'>✔ Confirmar pagamento e fechar comanda</button>'+
+    '</div>';
+  }else{
+    html+='<div class="space-y">'+
+      '<div style="display:flex;align-items:center;gap:12px;background:rgba(245,184,31,.08);border:1px solid var(--gold-border);border-radius:14px;padding:14px">'+
+        '<div style="background:var(--gold);color:#0f172a;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">✔</div>'+
+        '<div><p style="margin:0;font-weight:700">Pagamento confirmado</p>'+
+        '<p style="margin:2px 0 0;font-size:13px;color:#cbd5e1">'+forma.icon+' '+forma.label+(dv>1?' • '+dv+'x de '+money(tot/dv):'')+'</p></div>'+
+      '</div>'+
+      '<button class="btn btn-blue" onclick="reabrirComanda()">🔄 Reabrir comanda</button>'+
+    '</div>';
+  }
+
+  html+='</div>';
+  return html;
+}
+
+/* ----- Lista de comandas ----- */
+function renderComandas(){
+  var cards=state.comandas.map(function(c){
+    var tot=totalComanda(c);
+    return '<div class="card" style="padding:16px">'+
+      '<div class="between">'+
+        '<div style="min-width:0"><p style="margin:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(c.cliente)+'</p>'+
+        '<p style="margin:2px 0 0;font-size:12px;color:var(--muted)">'+c.itens.length+' serviço(s)</p></div>'+
+        badge(c)+
+      '</div>'+
+      '<div class="between mt">'+
+        '<span class="money" style="font-size:20px">'+money(tot)+'</span>'+
+        '<div class="row" style="gap:8px">'+
+          '<button class="btn btn-blue" onclick="abrirComanda(\''+c.id+'\')">Abrir</button>'+
+          '<button class="'+(confirmar==='cmd-'+c.id?'btn btn-danger':'icon-btn icon-btn-danger')+'" onclick="excluirComanda(\''+c.id+'\')">'+(confirmar==='cmd-'+c.id?'Confirmar?':'🗑️')+'</button>'+
+        '</div>'+
+      '</div></div>';
+  }).join('');
+
+  var listaHtml = state.comandas.length===0
+    ? '<div class="card"><div class="empty"><div class="empty-icon">🧾</div>Nenhuma comanda aberta.<br>Crie a primeira acima e lance os serviços.</div></div>'
+    : '<div class="grid grid-2">'+cards+'</div>';
+
+  return '<div class="card card-top"><h3 class="sec-title">➕ Iniciar nova comanda</h3>'+
+    '<div class="row" style="flex-wrap:nowrap">'+
+      '<input class="input" style="flex:1" placeholder="Nome do cliente…" value="'+esc(clienteNovo)+'" oninput="clienteNovo=this.value" onkeydown="if(event.key===\'Enter\')criarComanda()">'+
+      '<button class="btn btn-gold" onclick="criarComanda()" '+(clienteNovo.trim()?'':'disabled')+'>📋 Criar comanda</button>'+
+    '</div></div>'+
+    '<h3 class="sec-title">📋 Comandas do dia ('+state.comandas.length+')</h3>'+
+    listaHtml;
+}
+
+/* ----- Serviços ----- */
+function renderServicos(){
+  var lista=state.servicos.length===0
+    ? '<p class="empty">Catálogo vazio. Adicione serviços acima.</p>'
+    : state.servicos.map(function(s){
+      return '<div class="item">'+
+        '<div class="item-icon">✂️</div>'+
+        '<div class="item-main"><p class="item-title">'+esc(s.nome)+'</p></div>'+
+        '<span class="money">'+money(s.preco)+'</span>'+
+        '<button class="icon-btn" onclick="iniciarEdicaoServ(\''+s.id+'\')">✏️</button>'+
+        '<button class="icon-btn icon-btn-danger" onclick="excluirServico(\''+s.id+'\')">🗑️</button>'+
+      '</div>';
+    }).join('');
+
+  return '<div class="card card-top"><h3 class="sec-title">✂️ '+(servEditId?'Editar serviço':'Novo serviço no catálogo')+'</h3>'+
+    '<div class="grid grid-2">'+
+      '<div><label class="label">Nome do serviço</label><input class="input" placeholder="Ex.: Escova Progressiva" value="'+esc(servNome)+'" oninput="servNome=this.value"></div>'+
+      '<div><label class="label">Preço (R$)</label><input class="input" type="number" min="0" step="0.01" placeholder="0,00" value="'+esc(servPreco)+'" oninput="servPreco=this.value"></div>'+
+    '</div>'+
+    '<div class="row mt">'+
+      '<button class="btn btn-gold" onclick="salvarServico()">'+(servEditId?'✔ Salvar':'➕ Adicionar')+'</button>'+
+      (servEditId?'<button class="btn btn-ghost" onclick="cancelarEdicaoServ()">Cancelar</button>':'')+
+    '</div></div>'+
+    '<div class="card"><h3 class="sec-title">✂️ Catálogo ('+state.servicos.length+')</h3>'+lista+'</div>';
+}
+
+/* ----- Profissionais ----- */
+function renderProfissionais(){
+  var lista=state.profissionais.length===0
+    ? '<p class="empty">Nenhum profissional cadastrado.</p>'
+    : state.profissionais.map(function(p){
+      return '<div class="item">'+
+        '<div class="item-icon" style="background:rgba(37,99,235,.18);color:#93c5fd;border-radius:50%">👤</div>'+
+        '<div class="item-main"><p class="item-title">'+esc(p.nome)+'</p>'+
+        '<p class="item-sub">Comissão de '+p.comissao+'%</p></div>'+
+        '<button class="icon-btn" onclick="iniciarEdicaoProf(\''+p.id+'\')">✏️</button>'+
+        '<button class="icon-btn icon-btn-danger" onclick="excluirProfissional(\''+p.id+'\')">🗑️</button>'+
+      '</div>';
+    }).join('');
+
+  return '<div class="card card-top"><h3 class="sec-title">👥 '+(profEditId?'Editar profissional':'Novo profissional')+'</h3>'+
+    '<div class="grid grid-2">'+
+      '<div><label class="label">Nome</label><input class="input" placeholder="Ex.: Mariana Costa" value="'+esc(profNome)+'" oninput="profNome=this.value"></div>'+
+      '<div><label class="label">Comissão (%)</label><input class="input" type="number" min="0" max="100" step="0.5" placeholder="40" value="'+esc(profComissao)+'" oninput="profComissao=this.value"></div>'+
+    '</div>'+
+    '<div class="row mt">'+
+      '<button class="btn btn-gold" onclick="salvarProfissional()">'+(profEditId?'✔ Salvar':'➕ Adicionar')+'</button>'+
+      (profEditId?'<button class="btn btn-ghost" onclick="cancelarEdicaoProf()">Cancelar</button>':'')+
+    '</div></div>'+
+    '<div class="card"><h3 class="sec-title">👥 Equipe ('+state.profissionais.length+')</h3>'+lista+'</div>';
+}
+
+/* ----- Relatório ----- */
+function renderRelatorio(){
+  var resumo=resumoProfissionais();
+  var totGeral=resumo.reduce(function(s,p){return s+p.total;},0);
+  var totCom=resumo.reduce(function(s,p){return s+p.valorComissao;},0);
+  var itens=itensFiltrados();
+
+  var dataOpts='<option value="todas"'+(filtroData==='todas'?' selected':'')+'>Todas as datas</option>'+
+    datasExistentes().map(function(d){return '<option value="'+d+'"'+(filtroData===d?' selected':'')+'>'+fmtData(d)+'</option>';}).join('');
+
+  var tabela='';
+  if(resumo.length===0){
+    tabela='<div class="empty"><div class="empty-icon">📊</div>Nenhum lançamento para o período selecionado.</div>';
+  }else{
+    tabela='<div class="table-wrap"><table><thead><tr>'+
+      '<th>Profissional</th><th class="t-center">Serviços</th><th class="t-right">Vendas</th><th class="t-center">Comissão %</th><th class="t-right">Comissão (R$)</th>'+
+      '</tr></thead><tbody>'+
+      resumo.map(function(p){
+        return '<tr><td style="font-weight:700">'+esc(p.nome)+'</td>'+
+          '<td class="t-center">'+p.qtd+'</td>'+
+          '<td class="t-right" style="font-weight:700">'+money(p.total)+'</td>'+
+          '<td class="t-center">'+p.comissao+'%</td>'+
+          '<td class="t-right money">'+money(p.valorComissao)+'</td></tr>';
+      }).join('')+
+      '</tbody><tfoot><tr>'+
+        '<td colspan="2">Total geral</td>'+
+        '<td class="t-right">'+money(totGeral)+'</td>'+
+        '<td></td>'+
+        '<td class="t-right" style="color:var(--gold)">'+money(totCom)+'</td>'+
+      '</tr></tfoot></table></div>';
+  }
+
+  return '<div class="between" style="margin-bottom:16px">'+
+      '<h3 class="sec-title" style="margin:0">📊 Relatório de comissões</h3>'+
+      '<div style="width:100%;max-width:260px"><label class="label">📅 Filtrar por data</label>'+
+      '<select class="input" onchange="filtroData=this.value;render()">'+dataOpts+'</select></div>'+
+    '</div>'+
+    '<div class="grid grid-3" style="margin-bottom:18px">'+
+      '<div class="card stat"><div class="stat-label">Faturamento</div><div class="stat-value">'+money(totGeral)+'</div></div>'+
+      '<div class="card stat"><div class="stat-label">Total de comissões</div><div class="stat-value gold">'+money(totCom)+'</div></div>'+
+      '<div class="card stat"><div class="stat-label">Serviços lançados</div><div class="stat-value">'+itens.length+'</div></div>'+
+    '</div>'+
+    '<div class="card">'+tabela+'</div>';
+}
+
+/* ----- Ajustes ----- */
+function renderAjustes(){
+  var comissoesHtml=state.profissionais.length===0
+    ? '<p class="empty">Nenhum profissional cadastrado. Cadastre em “Profissionais”.</p>'
+    : state.profissionais.map(function(p){
+        return '<div class="between" style="background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:8px">'+
+          '<span style="font-weight:700">👤 '+esc(p.nome)+'</span>'+
+          '<div class="row" style="gap:8px">'+
+            '<input type="number" min="0" max="100" step="0.5" class="input" style="width:90px;text-align:center" value="'+p.comissao+'" onchange="atualizarComissao(\''+p.id+'\',this.value)">'+
+            '<span style="color:var(--gold);font-weight:800">%</span>'+
+          '</div>'+
+        '</div>';
+      }).join('');
+
+  return '<div class="card card-top"><h3 class="sec-title">💼 Configurar valores de comissão</h3>'+
+    '<p style="font-size:13px;color:var(--muted);margin:0 0 14px">Ajuste o percentual de comissão de cada profissional. As alterações são salvas automaticamente e valem para o relatório.</p>'+
+    comissoesHtml+
+    '</div>'+
+
+    '<div class="card card-top"><h3 class="sec-title">⚙️ Ajustes e dados</h3>'+
+    '<p style="font-size:13px;color:var(--muted);margin:0 0 16px">Tudo fica salvo automaticamente neste navegador (localStorage). Nada sai do seu dispositivo.</p>'+
+    '<div class="space-y">'+
+      '<div class="between" style="background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:14px;padding:16px">'+
+        '<div><p style="margin:0;font-weight:700">Zerar todas as comandas</p><p style="margin:2px 0 0;font-size:12px;color:var(--muted)">Apaga somente as comandas e lançamentos. Mantém serviços e profissionais.</p></div>'+
+        '<button class="'+(confirmar==='zerar'?'btn btn-danger':'btn btn-ghost')+'" onclick="zerarComandas()">🗑️ '+(confirmar==='zerar'?'Confirmar?':'Zerar comandas')+'</button>'+
+      '</div>'+
+      '<div class="between" style="background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:14px;padding:16px">'+
+        '<div><p style="margin:0;font-weight:700">Restaurar catálogo padrão</p><p style="margin:2px 0 0;font-size:12px;color:var(--muted)">Recarrega os 10 serviços e 3 profissionais de exemplo. Não apaga comandas.</p></div>'+
+        '<button class="btn btn-blue" onclick="restaurarCatalogo()">🔄 Restaurar catálogo</button>'+
+      '</div>'+
+      '<div class="between danger-zone">'+
+        '<div><p style="margin:0;font-weight:700;color:#fecaca">Limpar todos os dados</p><p style="margin:2px 0 0;font-size:12px;color:#fca5a5">Apaga comandas, serviços e profissionais. Esta ação não pode ser desfeita.</p></div>'+
+        '<button class="btn btn-danger" onclick="limparTudo()">🗑️ '+(confirmar==='limpar'?'Clique para confirmar!':'Limpar tudo')+'</button>'+
+      '</div>'+
+    '</div></div>';
+}
+
+/* ===== Iniciar ===== */
+render();
+</script>
+</body>
+</html>
